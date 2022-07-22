@@ -1,3 +1,4 @@
+import time
 import pandas as pd
 import tkinter as tk
 from tkinter import ttk
@@ -5,34 +6,28 @@ from tkinter import ttk
 db_fname = {}
 db_lname = {}
 db_age = {}
-db_entry = {}
-entryNumber = 0
+db_id = []
+db_id_nu = 0
 addFirstTimeClicked = False
-entryNumberString = "0"
+db_idString = "0"
 entryOK = True
 fileNotExistant = False
-index_range = []
 dontDestroy = False
-
-# range the index from 1 to 50
-for ii in range (50):
-    index_range.append(ii)
 
 # reading in existing file
 # if file does not exist or can't be found, a new one wil be created in safeClicked()
-# dataframe indexed from 0 to 49, meanst can contaain max. 50 entrys
 try:
     file = (r'C:\Users\david\OneDrive\Dokumenter\GitHub\Friends.xlsx')
     existing_df = pd.read_excel(file, sheet_name=0, index_col=0)
     # evaluating the highes entry count
-    entryNumber = existing_df['entry'].max()
+    db_id_nu = existing_df['DB ID'].max() + 1
 except:
     fileNotExistant = True
 
 # entry field refreshable
 def entryFrameFunction():
     global addFirstTimeClicked
-    global entryNumberString
+    global db_idString
     global entryOK
 
     # find entry button clicked
@@ -57,12 +52,12 @@ def entryFrameFunction():
                 # checking if age then converting to integer
                 if dropdown.get() == 'age':
                     itemToChangeX = int(itemToChange.get())
+
+                elif dropdown.get() == 'delete':
+                    existing_df.drop([entryToCorrect.get()-1], inplace=True)
+                    
                 else:
                     itemToChangeX = itemToChange.get()
-
-                if dropdown.get() == 'delete':
-                    existing_df.drop([entryToCorrect.get()-1], inplace=True)
-                else:
                     existing_df.loc[[entryToCorrect.get()-1], [dropdown.get()]] = itemToChangeX
 
                 dontDestroy = True
@@ -84,13 +79,13 @@ def entryFrameFunction():
                 found_lname_label.pack(fill='x', expand=True)
 
             # label for entry
-            entryNumber_label = ttk.Label(correctionFrame, text="Entry number to be corrected: ")
-            entryNumber_label.pack(fill='y', expand=True)
+            db_id_label = ttk.Label(correctionFrame, text="Entry number to be corrected: ")
+            db_id_label.pack(fill='y', expand=True)
 
             # field for correcting specific entry number
-            entryNumber_entry = ttk.Entry(correctionFrame, textvariable=entryToCorrect)
-            entryNumber_entry.pack(fill='y', expand=True)
-            entryNumber_entry.focus()
+            db_id_entry = ttk.Entry(correctionFrame, textvariable=entryToCorrect)
+            db_id_entry.pack(fill='y', expand=True)
+            db_id_entry.focus()
 
             # label for dropdown
             dropdown_label  = ttk.Label(correctionFrame, text="Choose which item shall be updated: ")
@@ -157,9 +152,10 @@ def entryFrameFunction():
     # add button clicked
     def addClicked():
         global addFirstTimeClicked
-        global entryNumber
-        global entryNumberString
+        global db_id_nu
+        global db_idString
         global entryOK
+        global db_entryTime
         ageInt = 0
 
         # check if all fields are filled
@@ -177,20 +173,22 @@ def entryFrameFunction():
                 entryFrameFunction()
 
             # check if age is in allowed range 0 - 100
+            # saving variables into dictionarys if in range
             if ageInt < 0 or ageInt > 100:
                 entryOK = False
                 entryFrame.destroy()
                 entryFrameFunction()
 
-            # saving variables into dictionarys if in range
             else:
-                db_entry[entryNumber] = entryNumber + 1
-                db_fname[entryNumber] = fname.get()
-                db_lname[entryNumber] = lname.get()
-                db_age[entryNumber] = ageInt
+                # db_id[db_id_nu] = db_id_nu + 1
+                db_id.append(db_id_nu)
+                db_fname[db_id_nu] = fname.get()
+                db_lname[db_id_nu] = lname.get()
+                db_age[db_id_nu] = ageInt
+                db_entryTime = time.strftime("%H:%M:%S", time.gmtime(time.time()))
                 addFirstTimeClicked = True
-                entryNumber = entryNumber + 1
-                entryNumberString = str(entryNumber)
+                db_id_nu = db_id_nu + 1
+                db_idString = str(db_id_nu)
                 entryOK = True
                 entryFrame.destroy()
                 entryFrameFunction()
@@ -202,16 +200,20 @@ def entryFrameFunction():
     # save button clicked
     def saveClicked():
         global dontDestroy
+        global db_entryTime
 
-        f = {"entry" : db_entry, "first name" : db_fname, "last name" : db_lname, "age" : db_age}
-        new_df = pd.DataFrame(f, index=index_range)
+        f = {"DB ID" : db_id, "first name" : db_fname, "last name" : db_lname, "age" : db_age, "entry time" : db_entryTime}
+        new_df = pd.DataFrame(f, index=db_id)
 
         if fileNotExistant == True:
             new_df.to_excel('Friends.xlsx')
             root.destroy()
+            print(new_df)
         else:
             df = pd.concat([existing_df, new_df])
             df.to_excel('Friends.xlsx')
+            print(df)
+
             if dontDestroy == False:
                 root.destroy()
             else:
@@ -267,7 +269,7 @@ def entryFrameFunction():
 
     # save button
     if addFirstTimeClicked == True:
-       save_button = ttk.Button(entryFrame, text="Save number " + entryNumberString + " entry to Friends.xlsx?", command=saveClicked)
+       save_button = ttk.Button(entryFrame, text="Save entry number " + db_idString + " to Friends.xlsx?", command=saveClicked)
        save_button.pack(fill='y', expand=True, pady=10) 
     
     # correct entry button
