@@ -1,7 +1,7 @@
-import time
 import pandas as pd
 import tkinter as tk
 from tkinter import ttk
+from datetime import datetime
 
 db_fname = {}
 db_lname = {}
@@ -47,6 +47,9 @@ def entryFrameFunction():
             # correct button clicked
             def correctClicked():
                 global dontDestroy
+                global db_entryTimeStamp
+
+                db_entryTimeStamp = datetime.now()
 
                 # updating choosen entry and item
                 # checking if age then converting to integer
@@ -54,11 +57,11 @@ def entryFrameFunction():
                     itemToChangeX = int(itemToChange.get())
 
                 elif dropdown.get() == 'delete':
-                    existing_df.drop([entryToCorrect.get()-1], inplace=True)
+                    existing_df.drop([entryToCorrect.get()], inplace=True)
                     
                 else:
                     itemToChangeX = itemToChange.get()
-                    existing_df.loc[[entryToCorrect.get()-1], [dropdown.get()]] = itemToChangeX
+                    existing_df.loc[[entryToCorrect.get()], [dropdown.get()]] = itemToChangeX
 
                 dontDestroy = True
                 correctionFrame.destroy()
@@ -155,7 +158,7 @@ def entryFrameFunction():
         global db_id_nu
         global db_idString
         global entryOK
-        global db_entryTime
+        global db_entryTimeStamp
         ageInt = 0
 
         # check if all fields are filled
@@ -180,12 +183,12 @@ def entryFrameFunction():
                 entryFrameFunction()
 
             else:
-                # db_id[db_id_nu] = db_id_nu + 1
                 db_id.append(db_id_nu)
                 db_fname[db_id_nu] = fname.get()
                 db_lname[db_id_nu] = lname.get()
                 db_age[db_id_nu] = ageInt
-                db_entryTime = time.strftime("%H:%M:%S", time.gmtime(time.time()))
+                db_entryTimeStamp = datetime.now()
+                print(db_entryTimeStamp)
                 addFirstTimeClicked = True
                 db_id_nu = db_id_nu + 1
                 db_idString = str(db_id_nu)
@@ -200,9 +203,9 @@ def entryFrameFunction():
     # save button clicked
     def saveClicked():
         global dontDestroy
-        global db_entryTime
+        global db_entryTimeStamp
 
-        f = {"DB ID" : db_id, "first name" : db_fname, "last name" : db_lname, "age" : db_age, "entry time" : db_entryTime}
+        f = {"DB ID" : db_id, "first name" : db_fname, "last name" : db_lname, "age" : db_age, "entry time stamp" : db_entryTimeStamp}
         new_df = pd.DataFrame(f, index=db_id)
 
         if fileNotExistant == True:

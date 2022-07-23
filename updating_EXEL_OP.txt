@@ -1,0 +1,7 @@
+# Back end
+1) After entering string in age field, no message about incoorect entry.
+2) Delete function?
+3) Get rid of index and use entry number as key instead, call it 'DB ID'
+
+# Front end
+1) The labels and fields are displayed incorrect after incorrect entry.
