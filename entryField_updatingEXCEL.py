@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import tkinter as tk
 from tkinter import ttk
@@ -8,6 +9,7 @@ db_lname = {}
 db_age = {}
 db_id = []
 db_id_nu = 0
+df = {}
 addFirstTimeClicked = False
 db_idString = "0"
 entryOK = True
@@ -219,6 +221,7 @@ def entryFrameFunction():
 
             if dontDestroy == False:
                 root.destroy()
+                os.startfile(r'C:\Users\david\OneDrive\Dokumenter\GitHub\creatingDatabaseViaEntryField\plotStat.py')
             else:
                 dontDestroy = False
                 entryFrameFunction()
