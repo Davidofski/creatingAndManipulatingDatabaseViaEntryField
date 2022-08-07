@@ -57,6 +57,7 @@ def entryFrameFunction():
                 # checking if age then converting to integer
                 if dropdown.get() == 'age':
                     itemToChangeX = int(itemToChange.get())
+                    existing_df.loc[[entryToCorrect.get()], ['age']] = itemToChangeX
 
                 elif dropdown.get() == 'delete':
                     existing_df.drop([entryToCorrect.get()], inplace=True)
@@ -73,15 +74,14 @@ def entryFrameFunction():
             correctionFrame = ttk.Frame(root)
             correctionFrame.pack(padx=10, pady=10, fill='x', expand=True)
 
-            # label for found first name if not 0
+            # textbox to display search output
+            db_textbox = tk.Text(correctionFrame, width=70, height=10)
+            db_textbox.pack()
             if fname_search != '0':
-                found_fname_label = ttk.Label(correctionFrame, text= fname_search)
-                found_fname_label.pack(fill='x', expand=False)
-
-            # label for found last name if not 0
+                db_textbox.insert("end", fname_search)
+                db_textbox.insert("end", "\n")
             if lname_search != '0':
-                found_lname_label = ttk.Label(correctionFrame, text= lname_search)
-                found_lname_label.pack(fill='x', expand=True)
+                db_textbox.insert("end", lname_search)
 
             # label for entry
             db_id_label = ttk.Label(correctionFrame, text="Entry number to be corrected: ")
@@ -284,7 +284,7 @@ def entryFrameFunction():
 
 # root window
 root = tk.Tk()
-root.geometry("330x300")
+root.geometry("500x400")
 root.resizable(True, True)
 root.title('Database Entry')
 

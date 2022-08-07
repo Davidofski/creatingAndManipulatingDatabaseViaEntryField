@@ -23,7 +23,7 @@ for index, value in stat_lname.items():
 
 # plotting a bar chart
 plt.bar(lastNames, lastNamesCount, tick_label = lastNames,
-        width = 0.4, color = ['blue', 'black'],)
+        width = 0.4, color = ['blue', 'black', 'orange', 'green'],)
   
 # naming the x-axis
 plt.xlabel('Last names')
