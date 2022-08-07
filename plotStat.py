@@ -25,11 +25,9 @@ for index, value in stat_lname.items():
 plt.bar(lastNames, lastNamesCount, tick_label = lastNames,
         width = 0.4, color = ['blue', 'black'],)
   
-# naming the x-axis
+# naming x-, y-axis and title
 plt.xlabel('Last names')
-# naming the y-axis
 plt.ylabel('Occurencies')
-# plot title
 plt.title('Occurencies of last names in database')
 
 # display the plot

@@ -3,6 +3,7 @@ import pandas as pd
 import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
+import my_functions
 
 db_fname = {}
 db_lname = {}
@@ -15,16 +16,6 @@ db_idString = "0"
 entryOK = True
 fileNotExistant = False
 dontDestroy = False
-
-# reading in existing file
-# if file does not exist or can't be found, a new one wil be created in safeClicked()
-try:
-    file = (r'C:\Users\david\OneDrive\Dokumenter\GitHub\Friends.xlsx')
-    existing_df = pd.read_excel(file, sheet_name=0, index_col=0)
-    # evaluating the highes entry count
-    db_id_nu = existing_df['DB ID'].max() + 1
-except:
-    fileNotExistant = True
 
 # entry field refreshable
 def entryFrameFunction():
@@ -67,7 +58,7 @@ def entryFrameFunction():
 
                 dontDestroy = True
                 correctionFrame.destroy()
-                saveClicked()
+                my_functions.saveClicked(dontDestroy)
             
             # correction frame
             correctionFrame = ttk.Frame(root)
@@ -201,30 +192,14 @@ def entryFrameFunction():
         # else display message to enter all fields
         else:
             headline_label["text"] = "Please fill in all fields!"
-    
-    # save button clicked
-    def saveClicked():
+
+    def gotoStat():
         global dontDestroy
         global db_entryTimeStamp
 
-        f = {"DB ID" : db_id, "first name" : db_fname, "last name" : db_lname, "age" : db_age, "entry time stamp" : db_entryTimeStamp}
-        new_df = pd.DataFrame(f, index=db_id)
-
-        if fileNotExistant == True:
-            new_df.to_excel('Friends.xlsx')
-            root.destroy()
-            print(new_df)
-        else:
-            df = pd.concat([existing_df, new_df])
-            df.to_excel('Friends.xlsx')
-            print(df)
-
-            if dontDestroy == False:
-                root.destroy()
-                os.startfile(r'C:\Users\david\OneDrive\Dokumenter\GitHub\creatingDatabaseViaEntryField\plotStat.py')
-            else:
-                dontDestroy = False
-                entryFrameFunction()
+        dontDestroy = False
+        db_entryTimeStamp = datetime.now()
+        my_functions.saveClicked(dontDestroy)
 
     # store variables
     fname = tk.StringVar()
@@ -275,18 +250,32 @@ def entryFrameFunction():
 
     # save button
     if addFirstTimeClicked == True:
-       save_button = ttk.Button(entryFrame, text="Save entry number " + db_idString + " to Friends.xlsx?", command=saveClicked)
+       save_button = ttk.Button(entryFrame, text="Save entry number " + db_idString + " to Friends.xlsx?", command=my_functions.saveClicked(dontDestroy))
        save_button.pack(fill='y', expand=True, pady=10) 
     
     # correct entry button
     find_button = ttk.Button(entryFrame, text="Find entry", command=findClicked)
     find_button.pack(fill='y', expand=True, pady=10)
 
+    # goto statistic button
+    stat_button = ttk.Button(entryFrame, text="Go to statistic (will save changes)", command=gotoStat)
+    stat_button.pack(fill='y', expand=True, pady=10)
+
 # root window
 root = tk.Tk()
 root.geometry("330x300")
 root.resizable(True, True)
 root.title('Database Entry')
+
+# reading in existing EXCEL file
+# if file does not exist or can't be found, a new one wil be created in safeClicked()
+try:
+    file = (r'C:\Users\david\OneDrive\Dokumenter\GitHub\Friends.xlsx')
+    existing_df = pd.read_excel(file, sheet_name=0, index_col=0)
+    # evaluating the highes entry count
+    db_id_nu = existing_df['DB ID'].max() + 1
+except:
+    fileNotExistant = True
 
 entryFrameFunction()
 
